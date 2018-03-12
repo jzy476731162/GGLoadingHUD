@@ -19,6 +19,8 @@ typedef NS_ENUM(NSUInteger, GGLoadingViewPresentationStyle) {
 + (void)showInView:(UIView *)view;
 - (void)showInView:(UIView *)view;
 
+- (void)dismissCurrently;
+
 @end
 
 @interface GGLoadingViewConfig : NSObject

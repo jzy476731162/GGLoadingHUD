@@ -44,6 +44,7 @@
         [self.layer addSublayer:_layer4];
         
         [self checkConfigIsValid];
+        [self setBackgroundColor:[UIColor lightTextColor]];
     }
     return self;
 }
@@ -234,7 +235,6 @@
     
     if ([self checkShadowIsValid]) {
         CGFloat shadowOffset = [[GGLoadingViewConfig sharedInstance] shadowOffset];
-//        NSArray *keyFrameList = [[GGLoadingViewConfig sharedInstance] animationKeyFrameList];
         
         NSArray *shadowList = @[@(CGSizeMake( -1 * shadowOffset, -1 * shadowOffset)),
                                 @(CGSizeMake(      shadowOffset, -1 * shadowOffset)),
@@ -242,27 +242,7 @@
                                 @(CGSizeMake(      shadowOffset,      shadowOffset))];
         CAKeyframeAnimation * shadowAnimation = [CAKeyframeAnimation animation];
         shadowAnimation.keyPath = @"shadowOffset";
-//        NSMutableArray *preValues = [NSMutableArray arrayWithArray:@[
-//                                                                     (NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][0] integerValue]],
-//                                                                     (NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][1] integerValue]]
-//                                                                     ]];
-//        NSMutableArray *preTimingFunction = [NSMutableArray arrayWithArray:@[
-//                                                                             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut],
-//                                                                             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]
-//                                                                             ]];
-//        if ([[GGLoadingViewConfig sharedInstance] animationStyle] == GGLoadingViewPresentationStyleCross) {
-//            [preValues addObject:(NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][0] integerValue]]];
-//             [preTimingFunction addObject:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-//        }else {
-//            [preValues addObjectsFromArray:@[(NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][2] integerValue]],
-//                                             (NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][3] integerValue]],
-//                                             (NSNumber *)shadowList[[(NSNumber *)keyFrameList[0][0] integerValue]]]];
-//            [preTimingFunction addObjectsFromArray:@[
-//                                                     [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut],
-//                                                     [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut],
-//                                                     [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]]];
-//        }
-//
+
         shadowAnimation.values = [self getShadowValuesWithShadowList:shadowList index:1];
         shadowAnimation.timingFunctions = [self getTimingFunctions];
         
@@ -301,6 +281,9 @@
     
 }
 
+- (void)dismissCurrently {
+    [self stopAnimation];
+}
 
 @end
 
