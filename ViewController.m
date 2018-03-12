@@ -10,21 +10,30 @@
 
 #import "GGLoadingView.h"
 
-@interface ViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface ViewController () 
 @property (weak, nonatomic) IBOutlet UITableView *testTableView;
+@property (nonatomic, weak) GGLoadingView *loadingView;
+@property (weak, nonatomic) IBOutlet UIView *testView;
 
 @end
 
 @implementation ViewController
 - (IBAction)triggerAction:(id)sender {
-    
+    if (self.loadingView.isAnimating) {
+        [self.loadingView stopAnimation];
+    }else {
+        self.loadingView = [GGLoadingView showInView:self.view];
+    }
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [[GGLoadingViewConfig sharedInstance] setAnimationStyle:GGLoadingViewPresentationStyleCountclockwise];
-    [GGLoadingView showInView:self.view];
+    [[GGLoadingViewConfig sharedInstance] setAnimationStyle:GGLoadingViewPresentationStyleCross];
+    __weak typeof(self)weakSelf = self;
+    self.loadingView = [GGLoadingView showInView:weakSelf.view];
+    
+    
 }
 
 
@@ -34,20 +43,4 @@
 }
 
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 20;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"test"];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"test"];
-    }
-    cell.textLabel.text = @"测试";
-    return cell;
-}
 @end

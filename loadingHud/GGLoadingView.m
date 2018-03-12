@@ -20,10 +20,10 @@
 @property (nonatomic, strong) CAShapeLayer *layer3;
 @property (nonatomic, strong) CAShapeLayer *layer4;
 
-@property (nonatomic, assign) CGRect frame1;
-@property (nonatomic, assign) CGRect frame2;
-@property (nonatomic, assign) CGRect frame3;
-@property (nonatomic, assign) CGRect frame4;
+@property (nonatomic, strong) CAAnimation *animation1;
+@property (nonatomic, strong) CAAnimation *animation2;
+@property (nonatomic, strong) CAAnimation *animation3;
+@property (nonatomic, strong) CAAnimation *animation4;
 
 @end
 
@@ -44,7 +44,14 @@
         [self.layer addSublayer:_layer4];
         
         [self checkConfigIsValid];
-        [self setBackgroundColor:[UIColor lightTextColor]];
+        [self setBackgroundColor:[UIColor lightGrayColor]];
+    }
+    return self;
+}
+
+- (instancetype)initWithParentView:(UIView *)view {
+    if (self = [self init]) {
+        [self showInView:view];
     }
     return self;
 }
@@ -99,17 +106,19 @@
     return layer;
 }
 
-+ (void)showInView:(UIView *)view {
++ (instancetype)showInView:(UIView *)view {
     GGLoadingView *loadingView = [[self class] new];
     [loadingView showInView:view];
+    return loadingView;
+    
 }
 
-- (void)showInView:(UIView *)view {
+- (void)showInView:(__weak UIView *)view {
     [self resizeSubLayerSize:view];
     [self startAnimation];
 }
 
-- (void)resizeSubLayerSize:(UIView *)view {
+- (void)resizeSubLayerSize:(__weak UIView *)view {
     CGFloat viewWidth = view.frame.size.width;
     CGFloat viewHeight = view.frame.size.height;
     CGPoint viewCenter = CGPointMake(viewWidth/2, viewHeight/2);
@@ -136,81 +145,28 @@
     CGFloat standCenter0 = boxWidth/separator;
     CGFloat standCenter1 = boxWidth/separator * (separator - 1);
     
-    _frame1 = CGRectMake(standCenter0 - layerWidth/2, standCenter0 - layerWidth/2, layerWidth, layerWidth);
-    _frame2 = CGRectMake(standCenter1 - layerWidth/2, standCenter0 - layerWidth/2, layerWidth, layerWidth);
-    _frame3 = CGRectMake(standCenter0 - layerWidth/2, standCenter1 - layerWidth/2, layerWidth, layerWidth);
-    _frame4 = CGRectMake(standCenter1 - layerWidth/2, standCenter1 - layerWidth/2, layerWidth, layerWidth);
+    CGRect frame1 = CGRectMake(standCenter0 - layerWidth/2, standCenter0 - layerWidth/2, layerWidth, layerWidth);
+    CGRect frame2 = CGRectMake(standCenter1 - layerWidth/2, standCenter0 - layerWidth/2, layerWidth, layerWidth);
+    CGRect frame3 = CGRectMake(standCenter0 - layerWidth/2, standCenter1 - layerWidth/2, layerWidth, layerWidth);
+    CGRect frame4 = CGRectMake(standCenter1 - layerWidth/2, standCenter1 - layerWidth/2, layerWidth, layerWidth);
     
     [self.layer1 setPath:[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, layerWidth, layerWidth) cornerRadius:layerWidth/2].CGPath];
     [self.layer1 setFillColor:[UIColor blueColor].CGColor];
-    self.layer1.frame = _frame1;
+    self.layer1.frame = frame1;
     
     [self.layer2 setPath:[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, layerWidth, layerWidth) cornerRadius:layerWidth/2].CGPath];
     [self.layer2 setFillColor:[UIColor orangeColor].CGColor];
-    self.layer2.frame = _frame2;
+    self.layer2.frame = frame2;
     
     [self.layer3 setPath:[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, layerWidth, layerWidth) cornerRadius:layerWidth/2].CGPath];
     [self.layer3 setFillColor:[UIColor yellowColor].CGColor];
-    self.layer3.frame = _frame3;
+    self.layer3.frame = frame3;
     
     [self.layer4 setPath:[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, layerWidth, layerWidth) cornerRadius:layerWidth/2].CGPath];
     [self.layer4 setFillColor:[UIColor greenColor].CGColor];
-    self.layer4.frame = _frame4;
-}
-
-- (CGPoint)getCenter:(CGRect)rect {
-    return CGPointMake((rect.origin.x + rect.size.width/2), (rect.origin.y + rect.size.height/2));
-}
-
-- (NSArray *)getTimingFunctions {
-    NSArray *frameList = [[GGLoadingViewConfig sharedInstance] animationKeyFrameList];
-    if (frameList.count > 0) {
-        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:([frameList[0] count])];
-        for (NSUInteger i = 0; i < [frameList[0] count]; i++) {
-            [arr addObject:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-        }
-        return arr;
-    }
-    return nil;
-}
-
-//index == 1,2,3,4
-- (NSMutableArray *)getPositionValuesWithCenterList:(NSArray *)centerList index:(NSUInteger)index{
-    NSMutableArray *positionList = [NSMutableArray new];
-    if (index < 1) {
-        index = 1;
-    }
-    NSArray *keyFrameList = [[GGLoadingViewConfig sharedInstance] animationKeyFrameList][index - 1];
-    for (NSUInteger i = 0; i <= keyFrameList.count; i++) {
-        if (i < keyFrameList.count) {
-            [positionList addObject:centerList[[(NSNumber *)keyFrameList[i] integerValue] - 1]];
-        }else if (i == keyFrameList.count) {
-            [positionList addObject:centerList[[(NSNumber *)keyFrameList[0] integerValue] - 1]];
-        }
-    }
-    return positionList;
-}
-
-//index : 1,2,3,4
-- (NSMutableArray *)getShadowValuesWithShadowList:(NSArray *)sample index:(NSUInteger)index {
-    NSMutableArray *shadowList = [NSMutableArray new];
-    if (index < 1) {
-        index = 1;
-    }
-    NSArray *keyFrameList = [[GGLoadingViewConfig sharedInstance] animationKeyFrameList][index - 1];
-    for (NSUInteger i = 0; i <= keyFrameList.count; i++) {
-        if (i < keyFrameList.count) {
-            [shadowList addObject:sample[[(NSNumber *)keyFrameList[i] integerValue] - 1]];
-        }else if (i == keyFrameList.count) {
-            [shadowList addObject:sample[[(NSNumber *)keyFrameList[0] integerValue] - 1]];
-        }
-    }
-    return shadowList;
-}
-
-- (void)startAnimation{
-
-    NSArray *centerList = @[@([self getCenter:_frame1]), @([self getCenter:_frame2]), @([self getCenter:_frame3]), @([self getCenter:_frame4])];
+    self.layer4.frame = frame4;
+    
+    NSArray *centerList = @[@([self getCenter:frame1]), @([self getCenter:frame2]), @([self getCenter:frame3]), @([self getCenter:frame4])];
     
     CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
     group.duration = 2;
@@ -242,7 +198,7 @@
                                 @(CGSizeMake(      shadowOffset,      shadowOffset))];
         CAKeyframeAnimation * shadowAnimation = [CAKeyframeAnimation animation];
         shadowAnimation.keyPath = @"shadowOffset";
-
+        
         shadowAnimation.values = [self getShadowValuesWithShadowList:shadowList index:1];
         shadowAnimation.timingFunctions = [self getTimingFunctions];
         
@@ -270,20 +226,90 @@
         group3.animations = @[animation3];
     }
     
-    [_layer1 addAnimation:group forKey:@"groupAnimation1"];
-    [_layer2 addAnimation:group1 forKey:@"groupAnimation2"];
-    [_layer3 addAnimation:group2 forKey:@"groupAnimation3"];
-    [_layer4 addAnimation:group3 forKey:@"groupAnimation4"];
+    self.animation1 = group;
+    self.animation2 = group1;
+    self.animation3 = group2;
+    self.animation4 = group3;
+}
+
+- (CGPoint)getCenter:(CGRect)rect {
+    return CGPointMake((rect.origin.x + rect.size.width/2), (rect.origin.y + rect.size.height/2));
+}
+
+- (NSArray *)getTimingFunctions {
+    NSArray *frameList = [[[GGLoadingViewConfig sharedInstance] animationKeyFrameList] copy];
+    if (frameList.count > 0) {
+        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:([frameList[0] count])];
+        for (NSUInteger i = 0; i < [frameList[0] count]; i++) {
+            [arr addObject:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+        }
+        return arr;
+    }
+    return nil;
+}
+
+//index == 1,2,3,4
+- (NSMutableArray *)getPositionValuesWithCenterList:(NSArray *)centerList index:(NSUInteger)index{
+    NSMutableArray *positionList = [NSMutableArray new];
+    if (index < 1) {
+        index = 1;
+    }
+    NSArray *keyFrameList = [[[GGLoadingViewConfig sharedInstance] animationKeyFrameList][index - 1] copy];
+    for (NSUInteger i = 0; i <= keyFrameList.count; i++) {
+        if (i < keyFrameList.count) {
+            [positionList addObject:centerList[[(NSNumber *)keyFrameList[i] integerValue] - 1]];
+        }else if (i == keyFrameList.count) {
+            [positionList addObject:centerList[[(NSNumber *)keyFrameList[0] integerValue] - 1]];
+        }
+    }
+    return positionList;
+}
+
+- (void)dealloc {
+    NSLog(@"View has Dealloced");
+}
+
+//index : 1,2,3,4
+- (NSMutableArray *)getShadowValuesWithShadowList:(NSArray *)sample index:(NSUInteger)index {
+    NSMutableArray *shadowList = [NSMutableArray new];
+    if (index < 1) {
+        index = 1;
+    }
+    NSArray *keyFrameList = [[[GGLoadingViewConfig sharedInstance] animationKeyFrameList][index - 1] copy];
+    for (NSUInteger i = 0; i <= keyFrameList.count; i++) {
+        if (i < keyFrameList.count) {
+            [shadowList addObject:sample[[(NSNumber *)keyFrameList[i] integerValue] - 1]];
+        }else if (i == keyFrameList.count) {
+            [shadowList addObject:sample[[(NSNumber *)keyFrameList[0] integerValue] - 1]];
+        }
+    }
+    return shadowList;
+}
+
+- (BOOL)isAnimating {
+    return [_layer1 animationForKey:@"groupAnimation1"];
+}
+
+- (void)startAnimation{
+    [_layer1 addAnimation:self.animation1  forKey:@"groupAnimation1"];
+    [_layer2 addAnimation:self.animation2 forKey:@"groupAnimation2"];
+    [_layer3 addAnimation:self.animation3 forKey:@"groupAnimation3"];
+    [_layer4 addAnimation:self.animation4 forKey:@"groupAnimation4"];
     
 }
 
 - (void)stopAnimation {
-    
+    [self.layer removeAllAnimations];
+    [UIView animateWithDuration:0.2 animations:^{
+        self.layer.opacity = 0;
+    } completion:^(BOOL finished) {
+        if (finished) {
+            [self removeFromSuperview];
+            
+        }
+    }];
 }
 
-- (void)dismissCurrently {
-    [self stopAnimation];
-}
 
 @end
 
@@ -298,6 +324,7 @@
     dispatch_once(&onceToken, ^{
         instance = [[GGLoadingViewConfig alloc] init];
         [(GGLoadingViewConfig *)instance setShadowOffset:0.5];
+        [(GGLoadingViewConfig *)instance setScaleSize:1];
     });
     return instance;
 }

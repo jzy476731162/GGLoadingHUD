@@ -14,19 +14,26 @@ typedef NS_ENUM(NSUInteger, GGLoadingViewPresentationStyle) {
     GGLoadingViewPresentationStyleCountclockwise,
 };
 
+@interface GGLoadingViewAnimationDelegagte
+
+- (void)animateFinished;
+
+@end
+
 @interface GGLoadingView : UIView
 
-+ (void)showInView:(UIView *)view;
-- (void)showInView:(UIView *)view;
++ (instancetype)showInView:(__weak UIView *)view;
 
-- (void)dismissCurrently;
+
+- (BOOL)isAnimating;
+- (void)stopAnimation;
 
 @end
 
 @interface GGLoadingViewConfig : NSObject
 + (instancetype)sharedInstance;
 
-@property (nonatomic, strong) NSArray <UIColor *>*pointColors;
+@property (nonatomic, strong) NSArray <UIColor *>*pointColors;//best for four 
 @property (nonatomic, assign) CGFloat shadowOffset; //default 0.5 disable = -1
 @property (nonatomic, assign) CGFloat scaleSize;//default is 1 [0.5...2]
 @property (nonatomic, strong) UIColor *shadowColor;//default black
