@@ -1,9 +1,9 @@
 //
 //  AppDelegate.m
-//  animator
+//  GGLoadingHUDDemo
 //
-//  Created by CJ on 2018/3/9.
-//  Copyright © 2018年 CJ. All rights reserved.
+//  Created by Carl Ji on 2018/5/18.
+//  Copyright © 2018年 Carl Ji. All rights reserved.
 //
 
 #import "AppDelegate.h"

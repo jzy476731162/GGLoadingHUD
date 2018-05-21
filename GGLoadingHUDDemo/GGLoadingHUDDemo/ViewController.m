@@ -1,16 +1,16 @@
 //
 //  ViewController.m
-//  animator
+//  GGLoadingHUDDemo
 //
-//  Created by CJ on 2018/3/9.
-//  Copyright © 2018年 CJ. All rights reserved.
+//  Created by Carl Ji on 2018/5/18.
+//  Copyright © 2018年 Carl Ji. All rights reserved.
 //
 
 #import "ViewController.h"
 
 #import "GGLoadingView.h"
 
-@interface ViewController () 
+@interface ViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *testTableView;
 @property (nonatomic, weak) GGLoadingView *loadingView;
 @property (weak, nonatomic) IBOutlet UIView *testView;
@@ -30,6 +30,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [[GGLoadingViewConfig sharedInstance] setAnimationStyle:GGLoadingViewPresentationStyleCross];
+    
+//    [[GGLoadingViewConfig sharedInstance] setAnimationStyle:GGLoadingViewPresentationStyleClockwise];
+//    [[GGLoadingViewConfig sharedInstance] setAnimationStyle:GGLoadingViewPresentationStyleCountclockwise];
     __weak typeof(self)weakSelf = self;
     self.loadingView = [GGLoadingView showInView:weakSelf.view];
     
